@@ -75,13 +75,17 @@ ecgFileInput.addEventListener("change", async function () {
   await callBackendDemo(file);
 });
 
-// ⚠️ Hàm này hiện tại là "AI mô phỏng" để demo trên GitHub Pages.
-// Sau này IT chỉ cần thay thành fetch() tới API thật.
+// ⚠️ Hàm AI DEMO: hiện tại tự sinh kết quả dựa theo tuổi + tên file.
+// Sau này IT sẽ thay nội dung bên trong bằng gọi API thật rồi dùng summary_text trả về.
 async function callBackendDemo(file) {
-  ecgStatus.textContent = "AI đang phân tích ECG (demo)...";
-  ecgStatus.className = "status-text status-loading";
+  const ecgStatus = document.getElementById("ecgStatus");
+  const textBox = document.getElementById("ecgTextSummary");
 
-  // giả lập trễ 1.2s
+  ecgStatus.textContent = "AI đang phân tích ECG (demo)…";
+  ecgStatus.className = "status-text status-loading";
+  textBox.textContent = "Đang phân tích hình ảnh ECG…";
+
+  // Giả lập thời gian xử lý ~1.2s
   await new Promise(resolve => setTimeout(resolve, 1200));
 
   const age = parseInt(document.getElementById("patientAge").value) || 0;
@@ -90,6 +94,7 @@ async function callBackendDemo(file) {
   let dangerousArr = false;
   let otherAbn = false;
 
+  // Logic demo rất đơn giản (chỉ để trình diễn):
   if (age >= 65) {
     ischemia = true;
     otherAbn = true;
@@ -102,19 +107,40 @@ async function callBackendDemo(file) {
   const fileName = file.name.toLowerCase();
   if (fileName.includes("vt") || fileName.includes("vf")) {
     dangerousArr = true;
-    ischemia = false;
+    ischemia = false; // ưu tiên nhịp
+    otherAbn = true;
   }
 
+  // Gán vào 3 checkbox
   document.getElementById("ecgIschemia").checked = ischemia;
   document.getElementById("ecgDangerousRhythm").checked = dangerousArr;
   document.getElementById("ecgOtherAbnormal").checked = otherAbn;
 
-  let msg = "AI demo: ";
-  msg += ischemia ? "nghi thiếu máu cơ tim; " : "không rõ thiếu máu cơ tim; ";
-  msg += dangerousArr ? "có rối loạn nhịp nguy hiểm; " : "không thấy rối loạn nhịp nguy hiểm; ";
-  msg += otherAbn ? "có bất thường ECG khác." : "không ghi nhận bất thường khác.";
-  ecgStatus.textContent = msg;
+  // Sinh câu tóm tắt đọc ECG (demo)
+  let summary = "";
+
+  if (dangerousArr) {
+    summary =
+      "AI (demo): Hình ảnh gợi ý rối loạn nhịp nguy hiểm (cần ưu tiên xử trí cấp cứu và chuyển tuyến). " +
+      "Đề nghị đối chiếu lâm sàng, nhịp mạch và theo dõi monitor.";
+  } else if (ischemia) {
+    summary =
+      "AI (demo): ECG nghi ngờ thiếu máu cơ tim. Có biến đổi ST–T gợi ý thiếu máu cơ tim, " +
+      "cần kết hợp triệu chứng đau ngực, men tim và hội chẩn tim mạch.";
+  } else if (otherAbn) {
+    summary =
+      "AI (demo): ECG có một số bất thường không đặc hiệu thiếu máu cơ tim (ví dụ: dày thất, block nhánh hoặc ngoại tâm thu). " +
+      "Đề nghị khám chuyên khoa tim mạch khi thuận tiện.";
+  } else {
+    summary =
+      "AI (demo): ECG hiện tại chưa thấy hình ảnh rõ của thiếu máu cơ tim hay rối loạn nhịp ác tính. " +
+      "Cần theo dõi triệu chứng, lặp lại ECG nếu đau ngực tái diễn.";
+  }
+
+  // Cập nhật giao diện
+  ecgStatus.textContent = "Phân tích ECG (demo) hoàn tất. Bác sĩ có thể chỉnh lại các ô bên dưới nếu cần.";
   ecgStatus.className = "status-text status-success";
+  textBox.textContent = summary;
 }
 
 // ======================
