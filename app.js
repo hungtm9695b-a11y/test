@@ -89,6 +89,7 @@ async function callBackendDemo(file) {
   statusBox.textContent = "AI đang phân tích ECG (demo)…";
   summaryBox.textContent = "Đang phân tích hình ảnh ECG…";
 
+  // giả lập trễ ~1.2s
   await new Promise(resolve => setTimeout(resolve, 1200));
 
   let ischemia = false;
@@ -112,28 +113,26 @@ async function callBackendDemo(file) {
     ischemia = false;
   }
 
-  // gán hidden values
   document.getElementById("ecgIschemia").value = ischemia ? "1" : "0";
   document.getElementById("ecgDangerousRhythm").value = dangerousArr ? "1" : "0";
   document.getElementById("ecgOtherAbnormal").value = otherAbn ? "1" : "0";
 
-  // TẠO KẾT LUẬN NGẮN GỌN
   let summary = "";
   if (dangerousArr) {
     summary =
       "⚠️ ECG gợi ý rối loạn nhịp nguy hiểm. Cần ưu tiên xử trí cấp cứu, theo dõi huyết động và xem xét chuyển tuyến.";
   } else if (ischemia) {
     summary =
-      "❗ ECG nghi ngờ thiếu máu cơ tim: có biến đổi ST–T gợi ý thiếu máu dưới nội mạc. Cần phối hợp triệu chứng và men tim.";
+      "❗ ECG nghi ngờ thiếu máu cơ tim: có biến đổi ST–T gợi ý thiếu máu cơ tim. Cần phối hợp triệu chứng và men tim.";
   } else if (otherAbn) {
     summary =
       "ℹ️ ECG có bất thường nhưng không đặc hiệu thiếu máu cơ tim (có thể dày thất, block nhánh hoặc ngoại tâm thu).";
   } else {
     summary =
-      "✓ ECG hiện tại không thấy dấu hiệu rõ thiếu máu cơ tim hay rối loạn nhịp ác tính. Cần theo dõi triệu chứng.";
+      "✓ ECG hiện tại chưa thấy dấu hiệu rõ thiếu máu cơ tim hay rối loạn nhịp ác tính. Cần theo dõi triệu chứng và lặp lại ECG khi cần.";
   }
 
-  statusBox.textContent = "Phân tích hoàn tất.";
+  statusBox.textContent = "Phân tích hoàn tất (demo).";
   summaryBox.textContent = summary;
 }
 
@@ -183,44 +182,35 @@ function calculateAndShowResult() {
   let riskTitle = "";
   let riskSubtitle = "";
   let recommendations = [];
-  let vitalExplain = "";
-  let rhythmExplain = "";
-  let ischemiaExplain = "";
   let probability = 0;
 
-  // === 1) ĐỎ – NGUY KỊCH ===
+  // 1) ĐỎ – NGUY KỊCH
   if (vitalsCritical) {
     riskClass = "risk-critical";
     riskTitle = "🔴 ĐỎ – NGUY KỊCH";
-    riskSubtitle = "Bệnh nhân có dấu hiệu đe dọa tính mạng.";
-    vitalExplain = "AI Safety: bất thường sinh tồn: " + vitalReasons.join("; ");
-    rhythmExplain = "Nhịp sẽ được đánh giá sau khi ổn định huyết động.";
-    ischemiaExplain = "Không trì hoãn cấp cứu để tìm dấu thiếu máu cơ tim.";
+    riskSubtitle = "Bệnh nhân có dấu hiệu đe doạ tính mạng, cần cấp cứu ngay.";
     recommendations = [
-      "Ưu tiên ABC ngay.",
-      "Ổn định huyết động.",
-      "Chuẩn bị chuyển tuyến khẩn."
+      "Ưu tiên ABC (đường thở – hô hấp – tuần hoàn).",
+      "Ổn định huyết động nhanh nhất có thể.",
+      "Liên hệ và chuyển tuyến khẩn đến cơ sở có hồi sức/can thiệp.",
+      "Theo dõi sát trên đường vận chuyển."
     ];
     probability = 0.9;
   }
-
-  // === 2) CAM – RỐI LOẠN NHỊP NGUY HIỂM ===
+  // 2) CAM – RỐI LOẠN NHỊP NGUY HIỂM
   else if (dangerousRhythm) {
     riskClass = "risk-arrhythmia";
     riskTitle = "🟠 CAM – RỐI LOẠN NHỊP NGUY HIỂM";
     riskSubtitle = "ECG có dấu hiệu rối loạn nhịp nguy hiểm.";
-    vitalExplain = "AI Safety: chưa ghi nhận sốc nhưng cần giám sát sát.";
-    rhythmExplain = "Ưu tiên xử trí nhịp trước (sốc điện/thuốc).";
-    ischemiaExplain = "Thiếu máu cơ tim đánh giá sau khi kiểm soát nhịp.";
     recommendations = [
-      "Xử trí theo phác đồ rối loạn nhịp.",
-      "Theo dõi monitor.",
-      "Hội chẩn và chuyển tuyến."
+      "Xử trí rối loạn nhịp theo phác đồ (sốc điện/thuốc).",
+      "Theo dõi huyết động và nhịp tim liên tục.",
+      "Hội chẩn tuyến trên sớm.",
+      "Chuyển tuyến cấp cứu đến cơ sở có khả năng hồi sức."
     ];
     probability = 0.85;
   }
-
-  // === TẦNG 3 – ISCHEMIA FUSION ===
+  // 3+4) VÀNG / XANH – THIẾU MÁU CƠ TIM
   else {
     let fusion = 0;
     if (ischemia) fusion += 4;
@@ -229,51 +219,43 @@ function calculateAndShowResult() {
 
     probability = Math.min(1, fusion / 11);
 
-    vitalExplain = "AI Safety: không ghi nhận dấu hiệu nguy kịch.";
-    rhythmExplain = "AI Rhythm: không có rối loạn nhịp nguy hiểm.";
-    ischemiaExplain = "AI Ischemia Fusion: kết hợp ECG + triệu chứng + nguy cơ.";
-
     if (probability < 0.2) {
-      // === 3) XANH – NGUY CƠ THẤP ===
       riskClass = "risk-low";
-      riskTitle = "🟢 XANH – NGUY CƠ THẤP";
-      riskSubtitle = "Chưa gợi ý thiếu máu cơ tim cấp.";
+      riskTitle = "🟢 XANH – NGUY CƠ THIẾU MÁU CƠ TIM THẤP";
+      riskSubtitle = "Hiện ít gợi ý thiếu máu cơ tim cấp, có thể theo dõi tại tuyến cơ sở.";
       recommendations = [
-        "Theo dõi tại tuyến cơ sở.",
-        "Lặp lại ECG khi triệu chứng thay đổi.",
-        "Giải thích dấu hiệu nguy hiểm."
+        "Theo dõi triệu chứng và chỉ số sinh tồn tại tuyến cơ sở.",
+        "Lặp lại ECG nếu triệu chứng xuất hiện hoặc thay đổi.",
+        "Khám chuyên khoa tim mạch khi thuận tiện.",
+        "Giải thích cho người bệnh các dấu hiệu nguy hiểm cần quay lại ngay."
       ];
     } else {
-      // === 4) VÀNG – NGUY CƠ TRUNG BÌNH/CAO ===
       riskClass = "risk-medium";
-      riskTitle = "🟡 VÀNG – NGUY CƠ TRUNG BÌNH/CAO";
-      riskSubtitle = "Có khả năng thiếu máu cơ tim.";
+      riskTitle = "🟡 VÀNG – NGUY CƠ THIẾU MÁU CƠ TIM TRUNG BÌNH/CAO";
+      riskSubtitle = "Có khả năng thiếu máu cơ tim, cần theo dõi sát và cân nhắc chuyển tuyến.";
       recommendations = [
-        "Theo dõi sát.",
-        "Lặp lại ECG trong 10–15 phút.",
-        "Hội chẩn tuyến trên.",
-        "Chuẩn bị chuyển tuyến nếu xấu đi."
+        "Theo dõi sát triệu chứng và huyết động.",
+        "Lặp lại ECG sau 10–15 phút hoặc khi triệu chứng thay đổi.",
+        "Hội chẩn tuyến trên (trực tiếp hoặc từ xa).",
+        "Chuẩn bị chuyển tuyến nếu triệu chứng không cải thiện hoặc nặng lên."
       ];
     }
   }
 
-  //------------------------------------------------------
-  // HIỂN THỊ KẾT QUẢ
-  //------------------------------------------------------
+  // HIỂN THỊ CARD MÀU
   const probText = (probability * 100).toFixed(0) + "%";
   const resultDiv = document.getElementById("resultRiskCard");
-
   resultDiv.innerHTML = `
     <div class="risk-card ${riskClass}">
       <h2>${riskTitle}</h2>
       <p>${riskSubtitle}</p>
-      <div class="pill">Xác suất thiếu máu cơ tim (demo): <b>${probText}</b></div>
+      <div class="pill">Xác suất thiếu máu cơ tim (ước tính demo): <b>${probText}</b></div>
     </div>
   `;
 
-  document.getElementById("vitalSummary").textContent = vitalExplain;
-  document.getElementById("rhythmSummary").textContent = rhythmExplain;
-  document.getElementById("ischemiaSummary").textContent = ischemiaExplain;
+  // KHUNG KHUYẾN CÁO CÙNG MÀU
+  const recBox = document.getElementById("recommendationBox");
+  recBox.className = "recommend-box " + riskClass;
 
   const recList = document.getElementById("recommendationList");
   recList.innerHTML = "";
@@ -283,18 +265,24 @@ function calculateAndShowResult() {
     recList.appendChild(li);
   });
 
+  // HEAR SCORE BÊN CẠNH
   const hear = calculateHEAR();
-  document.getElementById("hearSummary").innerHTML = `
+  const hearDiv = document.getElementById("hearSummary");
+  hearDiv.className = "hear-card";
+  hearDiv.innerHTML = `
     <h3>HEAR score</h3>
-    <p><b>${hear.total} / 8 điểm</b></p>
-    <p>History: ${hear.H}, ECG: ${hear.E}, Age: ${hear.A}, Risk: ${hear.R}</p>
+    <p><b>Tổng điểm: ${hear.total} / 8</b></p>
+    <p>History: ${hear.H} • ECG: ${hear.E} • Age: ${hear.A} • Risk: ${hear.R}</p>
+    <p style="font-size:11px;color:#4b5563;margin-top:6px;">
+      HEAR chỉ mang tính tham khảo, không thay thế phân tầng 4 màu của AI.
+    </p>
   `;
 
   goToStep(4);
 }
 
 //------------------------------------------------------
-// RESET
+// RESET FORM
 //------------------------------------------------------
 function resetForm() {
   document.querySelectorAll("input, select").forEach(el => {
@@ -304,8 +292,13 @@ function resetForm() {
   });
 
   document.getElementById("ecgPreview").innerHTML = "Chưa có ảnh ECG.";
-  document.getElementById("ecgStatus").textContent = "";
+  document.getElementById("ecgStatus").textContent = "Chưa phân tích. Vui lòng tải ECG.";
   document.getElementById("ecgTextSummary").textContent = "Chưa có kết quả AI.";
+
+  document.getElementById("resultRiskCard").innerHTML = "";
+  document.getElementById("recommendationBox").className = "recommend-box";
+  document.getElementById("recommendationList").innerHTML = "";
+  document.getElementById("hearSummary").innerHTML = "";
 
   goToStep(1);
 }
