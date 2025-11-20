@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>AI phát hiện sớm thiếu máu cơ tim – Demo</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 
   <style>
@@ -20,7 +19,7 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top left,#e0ebff,#f5f7fb 40%,#f9fafb);
       color: var(--text);
     }
@@ -33,27 +32,20 @@
       top: 0;
       z-index: 10;
     }
-    header h1 {
-      margin: 0 0 4px;
-      font-size: 18px;
-      font-weight: 600;
-    }
-    header p {
-      margin: 0;
-      font-size: 13px;
-      opacity: 0.9;
-    }
+    header h1 { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+    header p { margin: 0; font-size: 13px; opacity: 0.9; }
+
     .container {
       max-width: 960px;
       margin: 16px auto 32px;
       padding: 0 12px;
     }
+
     .stepper {
       display: flex;
       gap: 8px;
       margin-bottom: 16px;
       overflow-x: auto;
-      padding-bottom: 4px;
     }
     .step-pill {
       flex: 1;
@@ -67,14 +59,13 @@
       background: rgba(255,255,255,0.9);
       font-size: 12px;
       color: var(--muted);
-      white-space: nowrap;
     }
     .step-pill .badge {
       width: 20px;
       height: 20px;
       border-radius: 999px;
       border: 1px solid #d1d5db;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       font-size: 11px;
@@ -91,72 +82,36 @@
       background: rgba(255,255,255,0.18);
       color: #fff;
     }
+
     .card {
       background: var(--card);
       border-radius: var(--radius-lg);
       padding: 18px 16px 16px;
       box-shadow: var(--shadow);
     }
-    h2 {
-      margin: 0 0 12px;
-      font-size: 18px;
-    }
-    h3 {
-      margin: 18px 0 8px;
-      font-size: 15px;
-    }
-    label {
-      font-size: 13px;
-      display: block;
-      margin-bottom: 4px;
-      color: #374151;
-    }
-    input[type="text"],
-    input[type="number"],
-    select {
+
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    h3 { margin: 18px 0 8px; font-size: 15px; }
+
+    label { font-size: 13px; margin-bottom: 4px; display: block }
+
+    input[type="text"], input[type="number"], select {
       width: 100%;
       padding: 7px 9px;
       border-radius: 10px;
       border: 1px solid #d1d5db;
       font-size: 13px;
-      outline: none;
       background: #f9fafb;
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
     }
-    input:focus,
-    select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px rgba(37,99,235,0.25);
-      background: #ffffff;
-    }
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 10px; }
     .col-2 { flex: 1 1 48%; min-width: 160px; }
     .col-3 { flex: 1 1 30%; min-width: 120px; }
 
-    .checkbox-group label,
-    .radio-group label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    input[type="checkbox"],
-    input[type="radio"] {
-      accent-color: var(--primary);
-      transform: scale(1.05);
-    }
     .buttons {
       display: flex;
       justify-content: space-between;
-      gap: 8px;
       margin-top: 14px;
-      flex-wrap: wrap;
     }
     button {
       border: none;
@@ -164,30 +119,16 @@
       padding: 8px 16px;
       font-size: 13px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
     }
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-    }
-    .btn-secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-    .btn-full {
-      flex: 1 1 100%;
-      justify-content: center;
-    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: #e5e7eb; color: #111827; }
+
     .hidden { display: none; }
 
     .preview-ecg {
       border-radius: 10px;
       border: 1px dashed #cbd5e1;
       padding: 8px;
-      font-size: 12px;
-      color: #6b7280;
       text-align: center;
       margin-top: 6px;
       background: #f9fafb;
@@ -195,105 +136,83 @@
     .preview-ecg img {
       max-width: 100%;
       max-height: 260px;
-      margin-top: 6px;
       border-radius: 6px;
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15,23,42,0.08);
-      font-size: 11px;
-      color: #111827;
       margin-top: 6px;
     }
-    .pill-dot {
-      width: 8px;
-      height: 8px;
+
+    /* ==== Giao diện AI đọc ECG mới ==== */
+    .ai-ecg-panel {
+      margin-top: 14px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 10px 12px;
+    }
+    .ai-ecg-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-ecg-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
       border-radius: 999px;
-      background: rgba(15,23,42,0.5);
-    }
-
-    .risk-card {
-      border-radius: 16px;
-      padding: 16px 14px;
-      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #fff;
-    }
-    .risk-low { background: linear-gradient(135deg,#16a34a,#22c55e); }
-    .risk-medium { background: linear-gradient(135deg,#facc15,#fbbf24); color:#1f2933; }
-    .risk-arrhythmia { background: linear-gradient(135deg,#f97316,#fb923c); }
-    .risk-critical { background: linear-gradient(135deg,#b91c1c,#dc2626); }
-
-    .risk-card h2 {
-      margin: 0 0 4px;
+      box-shadow: 0 3px 8px rgba(37,99,235,0.4);
       font-size: 18px;
     }
-    .risk-card p {
-      margin: 2px 0;
+    .ai-ecg-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .ai-ecg-status {
+      font-size: 12px;
+      color: #4b5563;
+    }
+    .ai-ecg-body {
+      margin-top: 8px;
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px dashed #d1d5db;
       font-size: 13px;
+      line-height: 1.45;
     }
-    .risk-card .pill {
-      background: rgba(15,23,42,0.18);
-      color: #f9fafb;
-    }
-    ul {
-      margin: 4px 0 4px 18px;
-      padding: 0;
-      font-size: 13px;
-    }
+
     footer {
       text-align: center;
       font-size: 11px;
       color: #9ca3af;
       padding: 16px 0 24px;
     }
-    .status-text {
-      font-size: 12px;
-      margin-top: 4px;
-      color: #4b5563;
-    }
-    .status-loading { color: #1f4fbf; }
-    .status-error { color: #b91c1c; }
-    .status-success { color: #15803d; }
-    @media (max-width: 600px) {
-      header h1 { font-size: 16px; }
-      .container { padding: 0 10px; }
-      .card { padding: 14px 12px 12px; }
-      .row { gap: 8px; }
-    }
   </style>
 </head>
 <body>
 <header>
   <h1>AI phát hiện sớm thiếu máu cơ tim</h1>
-  <p>Tuyến cơ sở • AI đa tầng (Sinh tồn → Nhịp → Thiếu máu cơ tim) • Demo chạy trên GitHub Pages</p>
+  <p>Demo chạy trên GitHub Pages • AI đa tầng</p>
 </header>
 
 <div class="container">
+
   <div class="stepper">
-    <div class="step-pill active" id="stepLabel1">
-      <span class="badge">1</span> Thông tin & sinh tồn
-    </div>
-    <div class="step-pill" id="stepLabel2">
-      <span class="badge">2</span> ECG
-    </div>
-    <div class="step-pill" id="stepLabel3">
-      <span class="badge">3</span> Triệu chứng
-    </div>
-    <div class="step-pill" id="stepLabel4">
-      <span class="badge">4</span> Kết quả AI
-    </div>
+    <div class="step-pill active" id="stepLabel1"><span class="badge">1</span> Thông tin & sinh tồn</div>
+    <div class="step-pill" id="stepLabel2"><span class="badge">2</span> ECG</div>
+    <div class="step-pill" id="stepLabel3"><span class="badge">3</span> Triệu chứng</div>
+    <div class="step-pill" id="stepLabel4"><span class="badge">4</span> Kết quả AI</div>
   </div>
 
   <!-- STEP 1 -->
   <div class="card" id="step1">
     <h2>Bước 1. Thông tin & chỉ số sinh tồn</h2>
+
     <div class="row">
       <div class="col-2">
-        <label>Họ và tên (tuỳ chọn)</label>
+        <label>Họ tên (tuỳ chọn)</label>
         <input type="text" id="patientName" placeholder="VD: Nguyễn Văn A" />
       </div>
       <div class="col-2">
@@ -301,6 +220,7 @@
         <input type="number" id="patientAge" placeholder="VD: 58" />
       </div>
     </div>
+
     <div class="row">
       <div class="col-2">
         <label>Giới</label>
@@ -316,28 +236,29 @@
     <div class="row">
       <div class="col-3">
         <label>Huyết áp (mmHg)</label>
-        <input type="text" id="bp" placeholder="VD: 110/70" />
+        <input type="text" id="bp" placeholder="VD: 120/80" />
       </div>
       <div class="col-3">
-        <label>Mạch (lần/phút)</label>
-        <input type="number" id="hr" placeholder="VD: 80" />
+        <label>Mạch (/phút)</label>
+        <input type="number" id="hr" placeholder="80" />
       </div>
       <div class="col-3">
-        <label>Nhịp thở (lần/phút)</label>
-        <input type="number" id="rr" placeholder="VD: 18" />
+        <label>Nhịp thở</label>
+        <input type="number" id="rr" placeholder="18" />
       </div>
     </div>
+
     <div class="row">
       <div class="col-3">
         <label>SpO₂ (%)</label>
-        <input type="number" id="spo2" placeholder="VD: 97" />
+        <input type="number" id="spo2" placeholder="97" />
       </div>
       <div class="col-3">
         <label>Tri giác</label>
         <select id="consciousness">
           <option value="tinh">Tỉnh táo</option>
           <option value="lom">Lơ mơ</option>
-          <option value="honme">Hôn mê</option>
+          <option value="hon">Hôn mê</option>
         </select>
       </div>
     </div>
@@ -351,24 +272,33 @@
   <!-- STEP 2 -->
   <div class="card hidden" id="step2">
     <h2>Bước 2. Tải ảnh ECG</h2>
+
     <label>Chụp hoặc tải ảnh ECG (jpg/png)</label>
     <input type="file" id="ecgFile" accept="image/*" />
-    <div class="preview-ecg" id="ecgPreview">Chưa có ảnh ECG.</div>
-    <div id="ecgStatus" class="status-text"></div>
 
-    <h3>Kết quả AI backend (demo)</h3>
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="ecgIschemia" /> Thiếu máu cơ tim</label>
-      <label><input type="checkbox" id="ecgDangerousRhythm" /> Rối loạn nhịp nguy hiểm</label>
-      <label><input type="checkbox" id="ecgOtherAbnormal" /> Bất thường khác</label>
+    <div class="preview-ecg" id="ecgPreview">
+      Chưa có ảnh ECG.
     </div>
-    <h3>Tóm tắt đọc ECG (AI)</h3>
-<div id="ecgTextSummary"
-     style="margin-top:4px;font-size:13px;color:#111827;
-            background:#f9fafb;border-radius:8px;padding:8px 10px;
-            border:1px solid #e5e7eb;">
-  Chưa có kết quả AI.
-</div>
+
+    <!-- Panel AI đẹp -->
+    <div class="ai-ecg-panel">
+      <div class="ai-ecg-header">
+        <div class="ai-ecg-icon">🧠</div>
+        <div>
+          <div class="ai-ecg-title">AI đọc ECG (demo)</div>
+          <div id="ecgStatus" class="ai-ecg-status">Chưa phân tích. Vui lòng tải ECG.</div>
+        </div>
+      </div>
+
+      <div id="ecgTextSummary" class="ai-ecg-body">
+        Chưa có kết quả AI.
+      </div>
+    </div>
+
+    <!-- hidden -->
+    <input type="hidden" id="ecgIschemia" />
+    <input type="hidden" id="ecgDangerousRhythm" />
+    <input type="hidden" id="ecgOtherAbnormal" />
 
     <div class="buttons">
       <button class="btn-secondary" onclick="goToStep(1)">← Quay lại</button>
@@ -380,24 +310,20 @@
   <div class="card hidden" id="step3">
     <h2>Bước 3. Triệu chứng & yếu tố nguy cơ</h2>
 
-    <h3>Triệu chứng (bác sĩ chỉ cần tick)</h3>
-    <div class="radio-group">
-      <label><input type="checkbox" class="symptom" /> Đau xuất hiện khi gắng sức</label>
-      <label><input type="checkbox" class="symptom" /> Đau sau xương ức hoặc lan tay trái</label>
-      <label><input type="checkbox" class="symptom" /> Tức / bóp nghẹt</label>
-      <label><input type="checkbox" class="symptom" /> Cơn đau kéo dài &gt; 10 phút</label>
-      <label><input type="checkbox" class="symptom" /> Giảm khi nghỉ hoặc dùng nitroglycerin</label>
-      <label><input type="checkbox" class="symptom" /> Kèm khó thở, vã mồ hôi, buồn nôn</label>
-    </div>
+    <h3>Triệu chứng</h3>
+    <label><input type="checkbox" class="symptom" /> Đau khi gắng sức</label>
+    <label><input type="checkbox" class="symptom" /> Đau sau xương ức / lan tay trái</label>
+    <label><input type="checkbox" class="symptom" /> Tức / bóp nghẹt</label>
+    <label><input type="checkbox" class="symptom" /> Đau > 10 phút</label>
+    <label><input type="checkbox" class="symptom" /> Giảm khi nghỉ / nitrate</label>
+    <label><input type="checkbox" class="symptom" /> Kèm khó thở / vã mồ hôi</label>
 
-    <h3>Yếu tố nguy cơ tim mạch</h3>
-    <div class="checkbox-group">
-      <label><input type="checkbox" class="risk" /> Tăng huyết áp</label>
-      <label><input type="checkbox" class="risk" /> Đái tháo đường</label>
-      <label><input type="checkbox" class="risk" /> Hút thuốc lá</label>
-      <label><input type="checkbox" class="risk" /> Rối loạn lipid máu</label>
-      <label><input type="checkbox" class="risk" /> Tiền sử mạch vành</label>
-    </div>
+    <h3>Yếu tố nguy cơ</h3>
+    <label><input type="checkbox" class="risk" /> THA</label>
+    <label><input type="checkbox" class="risk" /> ĐTĐ</label>
+    <label><input type="checkbox" class="risk" /> Hút thuốc</label>
+    <label><input type="checkbox" class="risk" /> Rối loạn lipid</label>
+    <label><input type="checkbox" class="risk" /> Tiền sử mạch vành</label>
 
     <div class="buttons">
       <button class="btn-secondary" onclick="goToStep(2)">← Quay lại</button>
@@ -408,6 +334,7 @@
   <!-- STEP 4 -->
   <div class="card hidden" id="step4">
     <h2>Bước 4. Kết quả AI</h2>
+
     <div id="resultRiskCard"></div>
 
     <div class="card" style="background:#f9fafb;margin-top:10px;">
@@ -424,13 +351,14 @@
 
     <div class="buttons">
       <button class="btn-secondary" onclick="goToStep(3)">← Quay lại</button>
-      <button class="btn-primary btn-full" onclick="resetForm()">Tạo ca mới</button>
+      <button class="btn-primary" onclick="resetForm()">Tạo ca mới</button>
     </div>
   </div>
+
 </div>
 
 <footer>
-  Demo ý tưởng: AI đa tầng (Sinh tồn – Nhịp – Thiếu máu cơ tim) + HEAR score. Không thay thế chẩn đoán của bác sĩ.
+  Demo AI đa tầng. Không thay thế chẩn đoán.
 </footer>
 
 </body>
