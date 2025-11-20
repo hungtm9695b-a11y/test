@@ -91,7 +91,7 @@
     }
 
     h2 { margin: 0 0 12px; font-size: 18px; }
-    h3 { margin: 18px 0 8px; font-size: 15px; }
+    h3 { margin: 0 0 8px; font-size: 15px; }
 
     label { font-size: 13px; margin-bottom: 4px; display: block }
 
@@ -112,6 +112,8 @@
       display: flex;
       justify-content: space-between;
       margin-top: 14px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     button {
       border: none;
@@ -132,6 +134,7 @@
       text-align: center;
       margin-top: 6px;
       background: #f9fafb;
+      font-size: 13px;
     }
     .preview-ecg img {
       max-width: 100%;
@@ -140,7 +143,7 @@
       margin-top: 6px;
     }
 
-    /* ==== Giao diện AI đọc ECG mới ==== */
+    /* ==== Giao diện AI đọc ECG ==== */
     .ai-ecg-panel {
       margin-top: 14px;
       border-radius: 14px;
@@ -183,18 +186,106 @@
       line-height: 1.45;
     }
 
+    /* Card nguy cơ */
+    .risk-card {
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-top: 10px;
+      color: #ffffff;
+    }
+    .risk-low {
+      background: linear-gradient(135deg,#16a34a,#22c55e);
+    }
+    .risk-medium {
+      background: linear-gradient(135deg,#facc15,#fbbf24);
+      color: #1f2937;
+    }
+    .risk-arrhythmia {
+      background: linear-gradient(135deg,#f97316,#fb923c);
+    }
+    .risk-critical {
+      background: linear-gradient(135deg,#b91c1c,#dc2626);
+    }
+    .risk-card h2 { margin: 0 0 4px; font-size: 18px; }
+    .risk-card p { margin: 2px 0; font-size: 13px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.18);
+      font-size: 11px;
+      margin-top: 6px;
+    }
+
+    /* Bố cục kết quả: khuyến cáo + HEAR */
+    .result-layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .recommend-box {
+      flex: 1 1 60%;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #ffffff;
+    }
+    .recommend-box.risk-low {
+      background: linear-gradient(135deg,#16a34a,#22c55e);
+    }
+    .recommend-box.risk-medium {
+      background: linear-gradient(135deg,#facc15,#fbbf24);
+      color: #1f2937;
+    }
+    .recommend-box.risk-arrhythmia {
+      background: linear-gradient(135deg,#f97316,#fb923c);
+    }
+    .recommend-box.risk-critical {
+      background: linear-gradient(135deg,#b91c1c,#dc2626);
+    }
+    .recommend-box h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+    .recommend-box ul {
+      margin: 0 0 0 18px;
+      padding: 0;
+    }
+
+    .hear-card {
+      flex: 1 1 32%;
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: #eef2ff;
+      font-size: 13px;
+      color: #111827;
+    }
+    .hear-card h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+    .hear-card p { margin: 2px 0; }
+
     footer {
       text-align: center;
       font-size: 11px;
       color: #9ca3af;
       padding: 16px 0 24px;
     }
+
+    @media (max-width: 700px) {
+      .result-layout { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
 <header>
   <h1>AI phát hiện sớm thiếu máu cơ tim</h1>
-  <p>Demo chạy trên GitHub Pages • AI đa tầng</p>
+  <p>Demo chạy trên GitHub Pages • AI đa tầng (Sinh tồn – Nhịp – Thiếu máu cơ tim)</p>
 </header>
 
 <div class="container">
@@ -243,7 +334,7 @@
         <input type="number" id="hr" placeholder="80" />
       </div>
       <div class="col-3">
-        <label>Nhịp thở</label>
+        <label>Nhịp thở (/phút)</label>
         <input type="number" id="rr" placeholder="18" />
       </div>
     </div>
@@ -280,7 +371,6 @@
       Chưa có ảnh ECG.
     </div>
 
-    <!-- Panel AI đẹp -->
     <div class="ai-ecg-panel">
       <div class="ai-ecg-header">
         <div class="ai-ecg-icon">🧠</div>
@@ -295,7 +385,7 @@
       </div>
     </div>
 
-    <!-- hidden -->
+    <!-- hidden để JS sử dụng -->
     <input type="hidden" id="ecgIschemia" />
     <input type="hidden" id="ecgDangerousRhythm" />
     <input type="hidden" id="ecgOtherAbnormal" />
@@ -314,16 +404,16 @@
     <label><input type="checkbox" class="symptom" /> Đau khi gắng sức</label>
     <label><input type="checkbox" class="symptom" /> Đau sau xương ức / lan tay trái</label>
     <label><input type="checkbox" class="symptom" /> Tức / bóp nghẹt</label>
-    <label><input type="checkbox" class="symptom" /> Đau > 10 phút</label>
-    <label><input type="checkbox" class="symptom" /> Giảm khi nghỉ / nitrate</label>
-    <label><input type="checkbox" class="symptom" /> Kèm khó thở / vã mồ hôi</label>
+    <label><input type="checkbox" class="symptom" /> Cơn đau kéo dài > 10 phút</label>
+    <label><input type="checkbox" class="symptom" /> Giảm khi nghỉ hoặc dùng nitrate</label>
+    <label><input type="checkbox" class="symptom" /> Kèm khó thở, vã mồ hôi, buồn nôn</label>
 
     <h3>Yếu tố nguy cơ</h3>
-    <label><input type="checkbox" class="risk" /> THA</label>
-    <label><input type="checkbox" class="risk" /> ĐTĐ</label>
-    <label><input type="checkbox" class="risk" /> Hút thuốc</label>
-    <label><input type="checkbox" class="risk" /> Rối loạn lipid</label>
-    <label><input type="checkbox" class="risk" /> Tiền sử mạch vành</label>
+    <label><input type="checkbox" class="risk" /> Tăng huyết áp</label>
+    <label><input type="checkbox" class="risk" /> Đái tháo đường</label>
+    <label><input type="checkbox" class="risk" /> Hút thuốc lá</label>
+    <label><input type="checkbox" class="risk" /> Rối loạn lipid máu</label>
+    <label><input type="checkbox" class="risk" /> Tiền sử bệnh mạch vành</label>
 
     <div class="buttons">
       <button class="btn-secondary" onclick="goToStep(2)">← Quay lại</button>
@@ -335,18 +425,17 @@
   <div class="card hidden" id="step4">
     <h2>Bước 4. Kết quả AI</h2>
 
+    <!-- Card màu nguy cơ -->
     <div id="resultRiskCard"></div>
 
-    <div class="card" style="background:#f9fafb;margin-top:10px;">
-      <h3>Giải thích các tầng AI</h3>
-      <p id="vitalSummary"></p>
-      <p id="rhythmSummary"></p>
-      <p id="ischemiaSummary"></p>
+    <!-- Bố cục: trái = khuyến cáo (cùng màu), phải = HEAR -->
+    <div class="result-layout">
+      <div id="recommendationBox" class="recommend-box">
+        <h3>Khuyến cáo xử trí</h3>
+        <ul id="recommendationList"></ul>
+      </div>
 
-      <h3>Khuyến cáo xử trí</h3>
-      <ul id="recommendationList"></ul>
-
-      <div id="hearSummary" style="margin-top:10px;"></div>
+      <div id="hearSummary" class="hear-card"></div>
     </div>
 
     <div class="buttons">
@@ -358,7 +447,7 @@
 </div>
 
 <footer>
-  Demo AI đa tầng. Không thay thế chẩn đoán.
+  Demo ý tưởng. Không thay thế chẩn đoán của bác sĩ.
 </footer>
 
 </body>
